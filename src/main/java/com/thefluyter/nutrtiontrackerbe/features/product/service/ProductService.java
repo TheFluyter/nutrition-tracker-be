@@ -1,5 +1,7 @@
 package com.thefluyter.nutrtiontrackerbe.features.product.service;
 
+import com.thefluyter.nutrtiontrackerbe.features.product.dto.ProductDTO;
+import com.thefluyter.nutrtiontrackerbe.features.product.mapper.ProductMapper;
 import com.thefluyter.nutrtiontrackerbe.features.product.model.Product;
 import com.thefluyter.nutrtiontrackerbe.features.product.repository.ProductRepository;
 import com.thefluyter.nutrtiontrackerbe.shared.exception.ResourceNotFoundException;
@@ -13,38 +15,50 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductDTO> getAllProducts() {
+        List<Product> products = productRepository.findAll();
+        return productMapper.toDTOList(products);
     }
 
-    public Product getProductById(Long id) {
-        return productRepository.findById(id)
+    public ProductDTO getProductById(Long id) {
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
+        return productMapper.toDTO(product);
     }
 
-    public List<Product> searchProductsByName(String name) {
-        return productRepository.findByNameContainingIgnoreCase(name);
+    public List<ProductDTO> searchProductsByName(String name) {
+        List<Product> products = productRepository.findByNameContainingIgnoreCase(name);
+        return productMapper.toDTOList(products);
     }
 
-    public List<Product> getProductsByCalorieRange(double minCalories, double maxCalories) {
-        return productRepository.findByNutritionFactsCaloriesBetween(minCalories, maxCalories);
+    public List<ProductDTO> getProductsByCalorieRange(double minCalories, double maxCalories) {
+        List<Product> products = productRepository.findByNutritionFactsCaloriesBetween(minCalories, maxCalories);
+        return productMapper.toDTOList(products);
     }
 
-    public Product createProduct(Product product) {
-        return productRepository.save(product);
+    public ProductDTO createProduct(ProductDTO productDTO) {
+        Product product = productMapper.toEntityForCreate(productDTO);
+        Product savedProduct = productRepository.save(product);
+        return productMapper.toDTO(savedProduct);
     }
 
-    public Product updateProduct(Long id, Product productDetails) {
-        Product product = getProductById(id);
-        product.setName(productDetails.getName());
-        product.setDescription(productDetails.getDescription());
-        product.setNutritionFacts(productDetails.getNutritionFacts());
-        return productRepository.save(product);
+    public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
+        
+        existingProduct.setName(productDTO.getName());
+        existingProduct.setDescription(productDTO.getDescription());
+        existingProduct.setNutritionFacts(productMapper.toEntity(productDTO).getNutritionFacts());
+        
+        Product updatedProduct = productRepository.save(existingProduct);
+        return productMapper.toDTO(updatedProduct);
     }
 
     public void deleteProduct(Long id) {
-        Product product = getProductById(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
         productRepository.delete(product);
     }
 }
