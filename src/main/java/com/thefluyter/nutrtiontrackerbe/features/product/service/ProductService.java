@@ -1,68 +1,50 @@
 package com.thefluyter.nutrtiontrackerbe.features.product.service;
 
 import com.thefluyter.nutrtiontrackerbe.features.product.model.Product;
+import com.thefluyter.nutrtiontrackerbe.features.product.repository.ProductRepository;
+import com.thefluyter.nutrtiontrackerbe.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 
-    private final List<Product> mockProducts = initializeMockProducts();
+    private final ProductRepository productRepository;
 
     public List<Product> getAllProducts() {
-        return new ArrayList<>(mockProducts);
+        return productRepository.findAll();
     }
 
     public Product getProductById(Long id) {
-        return mockProducts.stream()
-                .filter(product -> product.getId().equals(id))
-                .findFirst()
-                .orElse(null);
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
     }
 
-    private List<Product> initializeMockProducts() {
-        List<Product> products = new ArrayList<>();
-        
-        // Banana product
-        Product banana = new Product();
-        banana.setId(1L);
-        banana.setName("Banana");
-        banana.setDescription("A yellow tropical fruit rich in potassium and vitamin C");
-        banana.setNutritionFacts(new Product.NutritionFacts(
-            89.0,    // calories
-            1.1,     // protein (g)
-            22.8,    // carbohydrates (g)
-            0.3,     // fat (g)
-            2.6,     // fiber (g)
-            12.2,    // sugar (g)
-            1.0,     // sodium (mg)
-            8.7,     // vitamin C (mg)
-            358.0    // potassium (mg)
-        ));
-        products.add(banana);
+    public List<Product> searchProductsByName(String name) {
+        return productRepository.findByNameContainingIgnoreCase(name);
+    }
 
-        // Apple product
-        Product apple = new Product();
-        apple.setId(2L);
-        apple.setName("Apple");
-        apple.setDescription("A crisp and sweet fruit, great source of fiber and vitamin C");
-        apple.setNutritionFacts(new Product.NutritionFacts(
-            52.0,    // calories
-            0.3,     // protein (g)
-            13.8,    // carbohydrates (g)
-            0.2,     // fat (g)
-            2.4,     // fiber (g)
-            10.4,    // sugar (g)
-            1.0,     // sodium (mg)
-            4.6,     // vitamin C (mg)
-            107.0    // potassium (mg)
-        ));
-        products.add(apple);
+    public List<Product> getProductsByCalorieRange(double minCalories, double maxCalories) {
+        return productRepository.findByNutritionFactsCaloriesBetween(minCalories, maxCalories);
+    }
 
-        return products;
+    public Product createProduct(Product product) {
+        return productRepository.save(product);
+    }
+
+    public Product updateProduct(Long id, Product productDetails) {
+        Product product = getProductById(id);
+        product.setName(productDetails.getName());
+        product.setDescription(productDetails.getDescription());
+        product.setNutritionFacts(productDetails.getNutritionFacts());
+        return productRepository.save(product);
+    }
+
+    public void deleteProduct(Long id) {
+        Product product = getProductById(id);
+        productRepository.delete(product);
     }
 }
