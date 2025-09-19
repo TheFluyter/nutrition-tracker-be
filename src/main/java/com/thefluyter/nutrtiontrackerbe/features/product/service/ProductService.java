@@ -1,6 +1,6 @@
-package com.thefluyter.nutrtiontrackerbe.service;
+package com.thefluyter.nutrtiontrackerbe.features.product.service;
 
-import com.thefluyter.nutrtiontrackerbe.model.Product;
+import com.thefluyter.nutrtiontrackerbe.features.product.model.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

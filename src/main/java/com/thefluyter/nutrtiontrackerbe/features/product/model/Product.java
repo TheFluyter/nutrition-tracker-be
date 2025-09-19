@@ -1,4 +1,4 @@
-package com.thefluyter.nutrtiontrackerbe.model;
+package com.thefluyter.nutrtiontrackerbe.features.product.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,7 +1,7 @@
-package com.thefluyter.nutrtiontrackerbe.controller;
+package com.thefluyter.nutrtiontrackerbe.features.product.controller;
 
-import com.thefluyter.nutrtiontrackerbe.model.Product;
-import com.thefluyter.nutrtiontrackerbe.service.ProductService;
+import com.thefluyter.nutrtiontrackerbe.features.product.model.Product;
+import com.thefluyter.nutrtiontrackerbe.features.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
