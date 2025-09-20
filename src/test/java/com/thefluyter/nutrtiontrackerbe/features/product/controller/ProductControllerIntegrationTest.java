@@ -55,18 +55,20 @@ class ProductControllerIntegrationTest {
         productRepository.saveAll(List.of(banana, apple));
 
         // WHEN: We make a GET request to retrieve all products
-        // THEN: We should receive a 200 OK response with both products as DTOs
+        // THEN: We should receive a 200 OK response with both products as DTOs in alphabetical order
         mockMvc.perform(get("/api/products"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id").exists())
             .andExpect(jsonPath("$[1].id").exists())
+            .andExpect(jsonPath("$[0].name", is("Apple")))  // Apple should come first alphabetically
+            .andExpect(jsonPath("$[1].name", is("Banana"))) // Banana should come second alphabetically
             .andExpect(content().json("""
                 [
                   {
-                    "name": "Banana",
-                    "description": "A yellow tropical fruit",
+                    "name": "Apple",
+                    "description": "A crisp and sweet fruit",
                     "nutritionFacts": {
-                      "calories": 89.0,
+                      "calories": 52.0,
                       "protein": 1.0,
                       "carbohydrates": 20.0,
                       "fat": 0.5,
@@ -78,10 +80,10 @@ class ProductControllerIntegrationTest {
                     }
                   },
                   {
-                    "name": "Apple",
-                    "description": "A crisp and sweet fruit",
+                    "name": "Banana",
+                    "description": "A yellow tropical fruit",
                     "nutritionFacts": {
-                      "calories": 52.0,
+                      "calories": 89.0,
                       "protein": 1.0,
                       "carbohydrates": 20.0,
                       "fat": 0.5,
@@ -128,13 +130,13 @@ class ProductControllerIntegrationTest {
         productRepository.saveAll(List.of(banana, apple, orange));
 
         // WHEN: We search for products with name containing "an"
-        // THEN: We should receive products that match the search criteria
+        // THEN: We should receive products that match the search criteria in alphabetical order
         mockMvc.perform(get("/api/products/search")
                 .param("name", "an"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$", hasSize(2)))
-            .andExpect(jsonPath("$[0].name", is("Banana")))
+            .andExpect(jsonPath("$[0].name", is("Banana")))  // Banana comes before Orange alphabetically
             .andExpect(jsonPath("$[1].name", is("Orange")));
     }
 
@@ -147,15 +149,15 @@ class ProductControllerIntegrationTest {
         productRepository.saveAll(List.of(banana, apple, orange));
 
         // WHEN: We filter products by calorie range 50-100
-        // THEN: We should receive products within that range
+        // THEN: We should receive products within that range in alphabetical order
         mockMvc.perform(get("/api/products/calories")
                 .param("min", "50.0")
                 .param("max", "100.0"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$", hasSize(2)))
-            .andExpect(jsonPath("$[0].name", is("Banana")))
-            .andExpect(jsonPath("$[1].name", is("Apple")));
+            .andExpect(jsonPath("$[0].name", is("Apple")))   // Apple comes before Banana alphabetically
+            .andExpect(jsonPath("$[1].name", is("Banana")));
     }
 
     @Test

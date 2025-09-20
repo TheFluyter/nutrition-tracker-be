@@ -18,7 +18,7 @@ public class ProductService {
     private final ProductMapper productMapper;
 
     public List<ProductDTO> getAllProducts() {
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productRepository.findAllOrderedByName();
         return productMapper.toDTOList(products);
     }
 
