@@ -38,6 +38,11 @@ public class ProductService {
         return productMapper.toDTOList(products);
     }
 
+    public List<ProductDTO> getProductsByProteinRange(double minProtein, double maxProtein) {
+        List<Product> products = productRepository.findByNutritionFactsProteinBetween(minProtein, maxProtein);
+        return productMapper.toDTOList(products);
+    }
+
     public ProductDTO createProduct(ProductDTO productDTO) {
         Product product = productMapper.toEntityForCreate(productDTO);
         Product savedProduct = productRepository.save(product);

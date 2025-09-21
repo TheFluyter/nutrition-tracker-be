@@ -43,6 +43,14 @@ public class ProductController {
         return ResponseUtil.ok(products);
     }
 
+    @GetMapping("/protein")
+    public ResponseEntity<List<ProductDTO>> getProductsByProteinRange(
+            @RequestParam double min, 
+            @RequestParam double max) {
+        List<ProductDTO> products = productService.getProductsByProteinRange(min, max);
+        return ResponseUtil.ok(products);
+    }
+
     @PostMapping
     public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
         ProductDTO createdProduct = productService.createProduct(productDTO);

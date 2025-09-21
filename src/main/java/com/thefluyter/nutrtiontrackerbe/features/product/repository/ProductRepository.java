@@ -16,6 +16,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.nutritionFacts.calories BETWEEN :minCalories AND :maxCalories ORDER BY p.name ASC")
     List<Product> findByNutritionFactsCaloriesBetween(double minCalories, double maxCalories);
     
+    @Query("SELECT p FROM Product p WHERE p.nutritionFacts.protein BETWEEN :minProtein AND :maxProtein ORDER BY p.name ASC")
+    List<Product> findByNutritionFactsProteinBetween(double minProtein, double maxProtein);
+    
     @Query("SELECT p FROM Product p ORDER BY p.name ASC")
     List<Product> findAllOrderedByName();
 }
